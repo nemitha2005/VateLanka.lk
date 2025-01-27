@@ -5,7 +5,7 @@ import playStoreIcon from '../assets/playstore.png';
 
 const Header = () => {
   return (
-    <header className="bg-customGreen text-white py-20 mt-16">
+    <header id="home" className="bg-customGreen text-white py-20 mt-16">
       <div className="container mx-auto px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
         {/* Left Column: Text Content */}
         <motion.div
@@ -35,7 +35,7 @@ const Header = () => {
           className="flex justify-center lg:justify-end"
         >
           <img
-            src={layoutImage} // Replace with your banner image URL
+            src={layoutImage} 
             alt="VateLanka Banner"
             className="rounded-lg"
           />
