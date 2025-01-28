@@ -23,7 +23,7 @@ const Navbar = () => {
     const target = document.querySelector(href);
     if (target) {
       target.scrollIntoView({ behavior: "smooth", block: "start" });
-      setIsOpen(false); 
+      setIsOpen(false);
     }
   };
 
@@ -82,6 +82,17 @@ const Navbar = () => {
               </a>
             </li>
           ))}
+          {/* Admin Login Button */}
+          <li className="block lg:inline-block py-3 lg:py-0 text-center">
+            <a
+              href="/adminlogin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white bg-green-700 hover:bg-green-800 transition-colors px-6 py-2 rounded-full text-base lg:text-lg font-medium"
+            >
+              Admin Login
+            </a>
+          </li>
         </ul>
       </div>
     </nav>
