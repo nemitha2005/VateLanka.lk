@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import BackToTopButton from "./BackToTopButton";
 import AdminLogin from "./components/AdminLogin";
 import AdminPanel from "./components/AdminPanel";
+import { Analytics } from "@vercel/analytics/react"
 import "./App.css";
 
 const App = () => {
@@ -50,6 +51,7 @@ const AppContent = ({ isAuthenticated, handleLogin }) => {
               <ContactForm />
               <Footer />
               <BackToTopButton />
+              <Analytics />
             </>
           }
         />
