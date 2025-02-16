@@ -32,7 +32,7 @@ const App = () => {
 };
 
 const AppContent = ({ isAuthenticated, handleLogin }) => {
-  const location = window.location.pathname; // Get the current path
+  const location = window.location.pathname; 
   const isAdminPage = location === "/adminlogin" || location === "/adminpanel";
 
   return (
