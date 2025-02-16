@@ -30,25 +30,54 @@ const AdminPanel = () => {
     setLoading(true);
     setMessage({ type: "", content: "" });
 
+    const payload = {
+      name: supervisorForm.name.trim(),
+      nic: supervisorForm.nic.trim(),
+      ward: supervisorForm.ward.trim(),
+      district: supervisorForm.district.trim(),
+      municipalCouncil: supervisorForm.municipalCouncil.trim().toLowerCase(),
+    };
+
+    console.log("Sending payload:", payload);
+
     try {
       const response = await fetch(
         "https://vatelanka-backend.vercel.app/api/admin/createSupervisor",
         {
           method: "POST",
           headers: {
+            Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(supervisorForm),
+          body: JSON.stringify(payload),
         }
       );
 
-      const data = await response.json();
+      console.log("Raw response status:", response.status);
+      console.log(
+        "Raw response headers:",
+        Object.fromEntries(response.headers)
+      );
+
+      const responseText = await response.text();
+      console.log("Raw response text:", responseText);
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("Failed to parse response as JSON:", parseError);
+        throw new Error("Invalid JSON response from server");
+      }
+
+      console.log("Parsed response data:", data);
 
       if (data.success) {
         setMessage({
           type: "success",
           content: `Supervisor created successfully! ID: ${data.data.supervisorId}, Password: ${data.data.password}`,
         });
+
         setSupervisorForm({
           name: "",
           nic: "",
@@ -57,12 +86,13 @@ const AdminPanel = () => {
           municipalCouncil: "",
         });
       } else {
-        setMessage({ type: "error", content: data.error });
+        throw new Error(data.error || "Server returned success: false");
       }
     } catch (error) {
+      console.error("Detailed error:", error);
       setMessage({
         type: "error",
-        content: "Failed to create supervisor. Please try again.",
+        content: `Failed to create supervisor: ${error.message}`,
       });
     } finally {
       setLoading(false);
@@ -75,18 +105,30 @@ const AdminPanel = () => {
     setMessage({ type: "", content: "" });
 
     try {
+      console.log("Request payload:", JSON.stringify(truckForm, null, 2));
+
       const response = await fetch(
         "https://vatelanka-backend.vercel.app/api/admin/createTruck",
         {
           method: "POST",
           headers: {
+            Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(truckForm),
+          body: JSON.stringify({
+            driverName: truckForm.driverName.trim(),
+            nic: truckForm.nic.trim(),
+            numberPlate: truckForm.numberPlate.trim(),
+            supervisorId: truckForm.supervisorId.trim(),
+            ward: truckForm.ward.trim(),
+            district: truckForm.district.trim(),
+            municipalCouncil: truckForm.municipalCouncil.trim().toLowerCase(),
+          }),
         }
       );
 
       const data = await response.json();
+      console.log("Response:", data);
 
       if (data.success) {
         setMessage({
@@ -106,6 +148,7 @@ const AdminPanel = () => {
         setMessage({ type: "error", content: data.error });
       }
     } catch (error) {
+      console.error("Error details:", error);
       setMessage({
         type: "error",
         content: "Failed to create truck. Please try again.",
@@ -124,7 +167,7 @@ const AdminPanel = () => {
       >
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {/* Header */}
-          <div className="bg-customGreen p-6">
+          <div className="bg-green-500 p-6">
             <h1 className="text-3xl font-bold text-white text-center">
               Admin Panel
             </h1>
