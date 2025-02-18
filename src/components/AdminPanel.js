@@ -14,12 +14,9 @@ import {
 const AdminPanel = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", content: "", form: "" });
-
   const [municipalCouncils, setMunicipalCouncils] = useState([]);
-
   const [supervisorDistricts, setSupervisorDistricts] = useState([]);
   const [supervisorWards, setSupervisorWards] = useState([]);
-
   const [truckDistricts, setTruckDistricts] = useState([]);
   const [truckWards, setTruckWards] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
@@ -27,6 +24,7 @@ const AdminPanel = () => {
   const [supervisorForm, setSupervisorForm] = useState({
     name: "",
     nic: "",
+    email: "",
     ward: "",
     district: "",
     municipalCouncil: "",
@@ -35,12 +33,28 @@ const AdminPanel = () => {
   const [truckForm, setTruckForm] = useState({
     driverName: "",
     nic: "",
+    email: "",
     numberPlate: "",
     supervisorId: "",
     ward: "",
     district: "",
     municipalCouncil: "",
   });
+
+  const validateNIC = (nic) => {
+    const nicPattern = /^(\d{12}|\d{9}[vV])$/;
+    return nicPattern.test(nic);
+  };
+
+  const validateNumberPlate = (plate) => {
+    const platePattern = /^[A-Z]{2}\d{4}$/;
+    return platePattern.test(plate);
+  };
+
+  const validateEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -173,10 +187,32 @@ const AdminPanel = () => {
     setLoading(true);
     setMessage({ type: "", content: "", form: "" });
 
+    if (!validateNIC(supervisorForm.nic.trim())) {
+      setMessage({
+        type: "error",
+        content:
+          "Invalid NIC format. Please use 12 digits or 9 digits followed by 'v'",
+        form: "supervisor",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!validateEmail(supervisorForm.email.trim())) {
+      setMessage({
+        type: "error",
+        content: "Invalid email format",
+        form: "supervisor",
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await createSupervisor({
         name: supervisorForm.name.trim(),
         nic: supervisorForm.nic.trim(),
+        email: supervisorForm.email.trim(),
         ward: supervisorForm.ward.trim(),
         district: supervisorForm.district.trim(),
         municipalCouncil: supervisorForm.municipalCouncil.trim(),
@@ -191,6 +227,7 @@ const AdminPanel = () => {
       setSupervisorForm({
         name: "",
         nic: "",
+        email: "",
         ward: "",
         district: "",
         municipalCouncil: "",
@@ -211,11 +248,44 @@ const AdminPanel = () => {
     setLoading(true);
     setMessage({ type: "", content: "", form: "" });
 
+    if (!validateNIC(truckForm.nic.trim())) {
+      setMessage({
+        type: "error",
+        content:
+          "Invalid NIC format. Please use 12 digits or 9 digits followed by 'v'",
+        form: "truck",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!validateNumberPlate(truckForm.numberPlate.trim())) {
+      setMessage({
+        type: "error",
+        content:
+          "Invalid number plate format. Please use 2 capital letters followed by 4 numbers (e.g., AB1234)",
+        form: "truck",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!validateEmail(truckForm.email.trim())) {
+      setMessage({
+        type: "error",
+        content: "Invalid email format",
+        form: "truck",
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await createTruck({
         driverName: truckForm.driverName.trim(),
         nic: truckForm.nic.trim(),
-        numberPlate: truckForm.numberPlate.trim(),
+        email: truckForm.email.trim(),
+        numberPlate: truckForm.numberPlate.trim().toUpperCase(),
         supervisorId: truckForm.supervisorId,
         ward: truckForm.ward,
         district: truckForm.district,
@@ -231,6 +301,7 @@ const AdminPanel = () => {
       setTruckForm({
         driverName: "",
         nic: "",
+        email: "",
         numberPlate: "",
         supervisorId: "",
         ward: "",
@@ -305,6 +376,26 @@ const AdminPanel = () => {
                     />
                   </div>
 
+                  {/* Email Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={supervisorForm.email}
+                      onChange={(e) =>
+                        setSupervisorForm({
+                          ...supervisorForm,
+                          email: e.target.value,
+                        })
+                      }
+                      placeholder="example@email.com"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                      required
+                    />
+                  </div>
+
                   {/* Supervisor NIC Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
@@ -319,12 +410,16 @@ const AdminPanel = () => {
                           nic: e.target.value,
                         })
                       }
+                      placeholder="123456789v or 123456789012"
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                       required
                     />
+                    <p className="mt-1 text-sm text-gray-500">
+                      Format: 12 digits or 9 digits followed by 'v'
+                    </p>
                   </div>
 
-                  {/* Supervisor Municipal Council Dropdown */}
+                  {/* Municipal Council Dropdown */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Municipal Council
@@ -351,7 +446,7 @@ const AdminPanel = () => {
                     </select>
                   </div>
 
-                  {/* Supervisor District Dropdown */}
+                  {/* District Dropdown */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       District
@@ -378,7 +473,7 @@ const AdminPanel = () => {
                     </select>
                   </div>
 
-                  {/* Supervisor Ward Dropdown */}
+                  {/* Ward Dropdown */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Ward
@@ -405,7 +500,7 @@ const AdminPanel = () => {
                   </div>
                 </div>
 
-                {/* Supervisor Submit Button */}
+                {/* Submit Button */}
                 <div className="flex justify-end">
                   <button
                     type="submit"
@@ -475,6 +570,26 @@ const AdminPanel = () => {
                     />
                   </div>
 
+                  {/* Email Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={truckForm.email}
+                      onChange={(e) =>
+                        setTruckForm({
+                          ...truckForm,
+                          email: e.target.value,
+                        })
+                      }
+                      placeholder="example@email.com"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                      required
+                    />
+                  </div>
+
                   {/* Driver NIC Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
@@ -489,9 +604,13 @@ const AdminPanel = () => {
                           nic: e.target.value,
                         })
                       }
+                      placeholder="123456789v or 123456789012"
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                       required
                     />
+                    <p className="mt-1 text-sm text-gray-500">
+                      Format: 12 digits or 9 digits followed by 'v'
+                    </p>
                   </div>
 
                   {/* Number Plate Input */}
@@ -505,15 +624,20 @@ const AdminPanel = () => {
                       onChange={(e) =>
                         setTruckForm({
                           ...truckForm,
-                          numberPlate: e.target.value,
+                          numberPlate: e.target.value.toUpperCase(),
                         })
                       }
+                      placeholder="AB1234"
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                       required
                     />
+                    <p className="mt-1 text-sm text-gray-500">
+                      Format: 2 capital letters followed by 4 numbers (e.g.,
+                      AB1234)
+                    </p>
                   </div>
 
-                  {/* Truck Municipal Council Dropdown */}
+                  {/* Municipal Council Dropdown */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Municipal Council
@@ -541,7 +665,7 @@ const AdminPanel = () => {
                     </select>
                   </div>
 
-                  {/* Truck District Dropdown */}
+                  {/* District Dropdown */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       District
@@ -569,7 +693,7 @@ const AdminPanel = () => {
                     </select>
                   </div>
 
-                  {/* Truck Ward Dropdown */}
+                  {/* Ward Dropdown */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Ward
@@ -623,7 +747,7 @@ const AdminPanel = () => {
                   </div>
                 </div>
 
-                {/* Truck Submit Button */}
+                {/* Submit Button */}
                 <div className="flex justify-end">
                   <button
                     type="submit"

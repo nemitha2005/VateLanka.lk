@@ -23,7 +23,7 @@ const Header = () => {
           </p>
           <button className="bg-white text-green-500 font-medium py-3 px-8 rounded-full hover:bg-gray-100 shadow-lg transition-all duration-300">
             <img src={playStoreIcon} alt="Google Play Icon" className="w-6 h-6 inline-block mr-2" />
-            Get it on Google Play
+            Get it on Google Play Soon
           </button>
         </motion.div>
 
