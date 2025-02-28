@@ -24,7 +24,10 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleLogin = (username, password) => {
-    if (username === "admin" && password === "1234") {
+    const adminUsername = process.env.REACT_APP_ADMIN_USERNAME;
+    const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD;
+    
+    if (username === adminUsername && password === adminPassword) {
       setIsAuthenticated(true);
       return true;
     }
