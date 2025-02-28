@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Header from "./components/Header";
 import AboutVateLanka from "./components/AboutVateLanka";
@@ -7,10 +12,12 @@ import Content from "./components/Content";
 import Developers from "./components/Developers";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
+import PrivacyPolicy from "./components/PrivacyPolicy";
+import TermsConditions from "./components/TermsConditions";
 import BackToTopButton from "./BackToTopButton";
 import AdminLogin from "./components/AdminLogin";
 import AdminPanel from "./components/AdminPanel";
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/react";
 import "./App.css";
 
 const App = () => {
@@ -32,13 +39,18 @@ const App = () => {
 };
 
 const AppContent = ({ isAuthenticated, handleLogin }) => {
-  const location = window.location.pathname; 
-  const isAdminPage = location === "/adminlogin" || location === "/adminpanel";
+  const location = window.location.pathname;
+  const isStandalonePage = 
+    location === "/adminlogin" || 
+    location === "/adminpanel" ||
+    location === "/privacy-policy" || 
+    location === "/terms-conditions";
 
   return (
     <div>
-      {/* Conditionally render the Navbar */}
-      {!isAdminPage && <Navbar />}
+      {/* Only render the Navbar on the main site pages */}
+      {!isStandalonePage && <Navbar />}
+
       <Routes>
         <Route
           path="/"
@@ -55,6 +67,8 @@ const AppContent = ({ isAuthenticated, handleLogin }) => {
             </>
           }
         />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-conditions" element={<TermsConditions />} />
         <Route
           path="/adminlogin"
           element={<AdminLogin onLogin={handleLogin} />}
