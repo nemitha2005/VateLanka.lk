@@ -25,6 +25,7 @@ const AdminPanel = () => {
     name: "",
     nic: "",
     email: "",
+    phoneNumber: "",
     ward: "",
     district: "",
     municipalCouncil: "",
@@ -34,6 +35,7 @@ const AdminPanel = () => {
     driverName: "",
     nic: "",
     email: "",
+    phoneNumber: "",
     numberPlate: "",
     supervisorId: "",
     ward: "",
@@ -54,6 +56,11 @@ const AdminPanel = () => {
   const validateEmail = (email) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
+  };
+
+  const validatePhoneNumber = (phone) => {
+    const cleanedPhone = phone.replace(/\D/g, "");
+    return cleanedPhone.length === 10;
   };
 
   useEffect(() => {
@@ -208,11 +215,22 @@ const AdminPanel = () => {
       return;
     }
 
+    if (!validatePhoneNumber(supervisorForm.phoneNumber.trim())) {
+      setMessage({
+        type: "error",
+        content: "Phone number must be exactly 10 digits",
+        form: "supervisor",
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await createSupervisor({
         name: supervisorForm.name.trim(),
         nic: supervisorForm.nic.trim(),
         email: supervisorForm.email.trim(),
+        phoneNumber: supervisorForm.phoneNumber.trim(),
         ward: supervisorForm.ward.trim(),
         district: supervisorForm.district.trim(),
         municipalCouncil: supervisorForm.municipalCouncil.trim(),
@@ -228,6 +246,7 @@ const AdminPanel = () => {
         name: "",
         nic: "",
         email: "",
+        phoneNumber: "",
         ward: "",
         district: "",
         municipalCouncil: "",
@@ -280,11 +299,22 @@ const AdminPanel = () => {
       return;
     }
 
+    if (!validatePhoneNumber(truckForm.phoneNumber.trim())) {
+      setMessage({
+        type: "error",
+        content: "Phone number must be exactly 10 digits",
+        form: "truck",
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await createTruck({
         driverName: truckForm.driverName.trim(),
         nic: truckForm.nic.trim(),
         email: truckForm.email.trim(),
+        phoneNumber: truckForm.phoneNumber.trim(),
         numberPlate: truckForm.numberPlate.trim().toUpperCase(),
         supervisorId: truckForm.supervisorId,
         ward: truckForm.ward,
@@ -302,6 +332,7 @@ const AdminPanel = () => {
         driverName: "",
         nic: "",
         email: "",
+        phoneNumber: "",
         numberPlate: "",
         supervisorId: "",
         ward: "",
@@ -316,6 +347,21 @@ const AdminPanel = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const formatPhoneNumber = (input) => {
+    const digits = input.replace(/\D/g, "");
+
+    if (digits.length <= 3) {
+      return digits;
+    } else if (digits.length <= 6) {
+      return `${digits.slice(0, 3)} ${digits.slice(3)}`;
+    } else {
+      return `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(
+        6,
+        10
+      )}`;
     }
   };
 
@@ -394,6 +440,32 @@ const AdminPanel = () => {
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                       required
                     />
+                  </div>
+
+                  {/* Phone Number Input - NEW */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Phone Number
+                    </label>
+                    <input
+                      type="text"
+                      value={supervisorForm.phoneNumber}
+                      onChange={(e) => {
+                        const formatted = formatPhoneNumber(e.target.value);
+                        if (formatted.replace(/\D/g, "").length <= 10) {
+                          setSupervisorForm({
+                            ...supervisorForm,
+                            phoneNumber: formatted,
+                          });
+                        }
+                      }}
+                      placeholder="070 530 6619"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                      required
+                    />
+                    <p className="mt-1 text-sm text-gray-500">
+                      Format: 10 digits (e.g., 070 530 6619)
+                    </p>
                   </div>
 
                   {/* Supervisor NIC Input */}
@@ -588,6 +660,32 @@ const AdminPanel = () => {
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                       required
                     />
+                  </div>
+
+                  {/* Phone Number Input - NEW */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Phone Number
+                    </label>
+                    <input
+                      type="text"
+                      value={truckForm.phoneNumber}
+                      onChange={(e) => {
+                        const formatted = formatPhoneNumber(e.target.value);
+                        if (formatted.replace(/\D/g, "").length <= 10) {
+                          setTruckForm({
+                            ...truckForm,
+                            phoneNumber: formatted,
+                          });
+                        }
+                      }}
+                      placeholder="070 530 6619"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                      required
+                    />
+                    <p className="mt-1 text-sm text-gray-500">
+                      Format: 10 digits (e.g., 070 530 6619)
+                    </p>
                   </div>
 
                   {/* Driver NIC Input */}
