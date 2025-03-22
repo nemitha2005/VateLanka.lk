@@ -4,6 +4,10 @@ import layoutImage from '../assets/layout.png';
 import playStoreIcon from '../assets/playstore.png';
 
 const Header = () => {
+  const handleDownloadClick = () => {
+    window.open("https://vatelanka1234.github.io/fakestore/", "_blank");
+  };
+
   return (
     <header id="home" className="bg-customGreen text-white py-20 mt-16">
       <div className="container mx-auto px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
@@ -21,9 +25,12 @@ const Header = () => {
             Revolutionizing Waste Management in Sri Lanka with innovative
             solutions for a cleaner and greener future.
           </p>
-          <button className="bg-white text-green-500 font-medium py-3 px-8 rounded-full hover:bg-gray-100 shadow-lg transition-all duration-300">
+          <button 
+            className="bg-white text-green-500 font-medium py-3 px-8 rounded-full hover:bg-gray-100 shadow-lg transition-all duration-300"
+            onClick={handleDownloadClick}
+          >
             <img src={playStoreIcon} alt="Google Play Icon" className="w-6 h-6 inline-block mr-2" />
-            Get it on Google Play Soon
+            Download Now!
           </button>
         </motion.div>
 
